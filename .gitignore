@@ -1,52 +1,50 @@
-# Prerequisites
-*.d
+# Node modules
+node_modules/
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Linker output
-*.ilk
-*.map
-*.exp
+# Dependency directories
+/.pnp
+.pnp.js
 
-# Precompiled Headers
-*.gch
-*.pch
+# Testing
+/coverage
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+# Production build
+/build
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+# Optional npm cache directory
+.npm
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+# Optional eslint cache
+.eslintcache
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+# IDE settings
+.idea/
+.vscode/
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Parcel-bundler cache
+.cache
+
+# Editor directories and files
+*.swp
+*.swo
+*.swn
+*~
+
+# Env files (e.g., if you're using environment variables)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
