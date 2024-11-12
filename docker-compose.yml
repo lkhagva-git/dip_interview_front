@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./main  # Build the Docker image from the 'main' directory
+      dockerfile: ../Dockerfile  # Path to Dockerfile relative to the build context
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./main:/app  # Mount the 'main' directory to /app inside the container
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: npm start
+
+networks:
+  default:
+    external:
+      name: proxynetwork

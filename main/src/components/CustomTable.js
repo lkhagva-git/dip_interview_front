@@ -18,14 +18,14 @@ const data = [
     address: 'London No. 1 Lake Park',
     tags: ['loser'],
   },
-  {
-    key: '3',
-    firstName: 'Joe',
-    lastName: 'Black',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
+  // {
+  //   key: '3',
+  //   firstName: 'Joe',
+  //   lastName: 'Black',
+  //   age: 32,
+  //   address: 'Sydney No. 1 Lake Park',
+  //   tags: ['cool', 'teacher'],
+  // },
 ];
 const CustomTable = () => (
   <Table dataSource={data}>
