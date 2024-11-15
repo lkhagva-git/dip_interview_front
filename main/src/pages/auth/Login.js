@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../../utils';
+import { loginFetch } from '../../utils';
+import { useAuth } from '../../contexts/AuthContext';
 
-const Login = ({ setIsAuthenticated }) => {
+const Login = ({ setProfileData }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { login } = useAuth();
+
 
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
             const data = { username, password };
-            const response = await login(data);
-            localStorage.setItem('token', response.token);
-            setIsAuthenticated(true);
+            const responseToken = await loginFetch(data);
+
+            login(responseToken.token);
             navigate('/');
         } catch (err) {
             setError(err.message);

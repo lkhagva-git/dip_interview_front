@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = ({ setIsAuthenticated }) => {
+  const { auth, logout } = useAuth();
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsAuthenticated(false);
-  };
-
+  const API_BASE_URL = 'http://localhost:8001/';
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -35,8 +34,8 @@ const Navbar = ({ setIsAuthenticated }) => {
                   <span className="sr-only">Open user menu</span>
                   <img
                     className="w-8 h-8 rounded-full"
-                    src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                    alt="user photo"
+                    src={API_BASE_URL + auth.profile.image_url}
+                    alt="user profile"
                   />
                 </button>
               </div>
@@ -65,7 +64,7 @@ const Navbar = ({ setIsAuthenticated }) => {
                       <Link to="/"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                         role="menuitem"
-                        onClick={handleLogout}>
+                        onClick={logout}>
                         Гарах
                       </Link>
                     </li>

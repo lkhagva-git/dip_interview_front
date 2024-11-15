@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
-import CustomTable from '../components/CustomTable';
 import { getRequest } from '../utils';
 
-const JobApplicants = () => {
+const Interview = () => {
     
     useEffect(() => {
         getRequest("api/test_access/");
@@ -10,9 +9,9 @@ const JobApplicants = () => {
 
     return (
         <>
-            <CustomTable />
+            Helloo its yriltslaga hiih heseg
         </>
     );
 };
 
-export default JobApplicants;
+export default Interview;

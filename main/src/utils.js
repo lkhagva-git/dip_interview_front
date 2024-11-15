@@ -1,14 +1,14 @@
 import axios from 'axios';
 
-// Create an axios instance
+const API_BASE_URL = 'http://localhost:8001';
+
 const api = axios.create({
-  baseURL: 'http://localhost:8001',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Interceptor to attach the token to every request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -16,6 +16,7 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
 
 /**
  * Handles success responses
@@ -26,6 +27,7 @@ const handleSuccess = (response) => {
   console.log("Request Successful:", response);
   return response.data;
 };
+
 
 /**
  * Handles error responses
@@ -48,6 +50,7 @@ const handleError = (error) => {
   }
 };
 
+
 /**
  * Generic POST request
  * @param {string} url - API endpoint
@@ -63,6 +66,7 @@ export const postRequest = async (url, data) => {
   }
 };
 
+
 /**
  * Generic GET request
  * @param {string} url - API endpoint
@@ -77,6 +81,7 @@ export const getRequest = async (url) => {
   }
 };
 
+
 // Specific API functions using the generic functions
 
 /**
@@ -84,7 +89,7 @@ export const getRequest = async (url) => {
  * @param {Object} data - { username: '', password: '' }
  * @returns {Object} - Token from the response
  */
-export const login = async (data) => {
+export const loginFetch = async (data) => {
   return await postRequest('/api/token/', data);
 };
 
