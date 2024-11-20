@@ -9,6 +9,7 @@ import Profile from './pages/Profile';
 import Schedule from './pages/Schedule';
 import CreateAnket from './pages/CreateAnket';
 import JobCandidateDetail from './pages/JobCandidateDetail';
+import Interview from './pages/Interview';
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -28,6 +29,7 @@ function App() {
     { path: '/', element: <JobApplicants /> },
     { path: '/profile', element: <Profile /> },
     { path: '/candidate/:id', element: <JobCandidateDetail /> },
+    { path: '/candidate/:id/interview/:inter_id/:is_final', element: <Interview /> },
     { path: '/schedule', element: <Schedule /> },
     { path: '/createAnket', element: <CreateAnket /> },
   ];

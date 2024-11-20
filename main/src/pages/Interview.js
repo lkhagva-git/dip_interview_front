@@ -1,20 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, message, Upload, DatePicker, Select, Checkbox, Row, Col, Radio, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { postRequest } from '../utils';
+import { getRequest, postRequest } from '../utils';
 import { useAuth } from '../contexts/AuthContext';
 import dayjs from 'dayjs';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const { Option } = Select;
 
-const Interview = ({ data }) => {
+const Interview = () => {
     const { auth } = useAuth();
-    const [form] = Form.useForm();
-    const [interviewStatus, setInterviewStatus] = useState();
-    const [firstModalOpen, setFirstModalOpen] = useState(false);
-    const [secondModalOpen, setSecondModalOpen] = useState(false);
+    const navigate = useNavigate();
 
-    const [formData, setFormData] = useState(false);
+    const { id, inter_id, is_final } = useParams();
+
+    const [form] = Form.useForm();
+    const [firstModalOpen, setFirstModalOpen] = useState(false);
+
+    const [jobApplicationData, setJobApplicationData] = useState(null);
 
     const profile = auth.profile;
 
@@ -24,22 +27,17 @@ const Interview = ({ data }) => {
         setFirstModalOpen(false);
     };
 
-    const secondModalHandleCancel = () => {
-        setSecondModalOpen(false);
-    };
-
-    const handlePositiveDecision = () => {
-        setInterviewStatus(0);
-        setSecondModalOpen(true);
-    };
-
-    const handleNegativeDecision = () => {
-        setInterviewStatus(1);
+    const handleDecision = (status, formData) => {
+        formData.status = status;
         setFirstModalOpen(false);
-        send();
+        send(formData);
     };
 
-    const send = async () => {
+    const send = async (formData) => {
+        if (!formData) {
+            message.error('Form data is missing');
+            return;
+        }
 
         const sendData = {
             communication: formData.question_1,
@@ -51,81 +49,67 @@ const Interview = ({ data }) => {
             leadership: formData.question_7,
             knowledge: formData.question_8,
             overall_score: formData.question_9,
-
-            status: interviewStatus,
+            status: formData.status,
             pros: formData.pros,
             cons: formData.cons,
             main_overall: formData.main_overall,
             conclution_points: formData.conclution_points,
             additional_note: formData.additional_note,
-
-            candidate_id: data.id,
-            suggest_employee_id: formData.suggest_employee_id
-        }
+            // candidate_id: id,
+            inter_id: inter_id
+        };
+        console.log(sendData)
         try {
             const response = await postRequest('/api/create_interview/', sendData);
-            message.success('interview successfully created!');
-
+            message.success('Interview successfully created!');
+            navigate(`/candidate/${id}`);
         } catch (error) {
             message.error('Failed to create interview');
         }
     };
 
-
-    const onFirstFormFinish = async (values) => {
-        setFormData(values);
-        console.log("values -->", values);
+    const onFormFinish = async (values) => {
         setFirstModalOpen(true);
     };
 
-    const onSecondFormFinish = async (values) => {
-        setFormData({
-            ...formData,
-            suggest_employee_id: values.suggest_employee_id
-        });
-        send();
-        // setFirstModalOpen(true);
+    const getJobApplicationData = async () => {
+        try {
+            const response = await getRequest(`/api/job_application/${id}/`);
+            setJobApplicationData(response);
+        } catch (error) {
+            console.error('Failed to fetch candidate job_application:', error);
+        }
     };
 
+    useEffect(() => {
+        if (id) {
+            getJobApplicationData();
+        }
+    }, [id]);
+
+    useEffect(() => {
+        if (jobApplicationData) {
+            form.setFieldsValue({
+                candidate_last_name: jobApplicationData.last_name,
+                candidate_first_name: jobApplicationData.first_name,
+                candidate_company: jobApplicationData.company,
+                candidate_department: jobApplicationData.department,
+                candidate_title: jobApplicationData.title
+            });
+        }
+    }, [jobApplicationData, form]);
 
     return (
         <>
-            <Modal title="Шийдвэр" open={firstModalOpen} onCancel={firstModalHandleCancel}>
-                <Button type="primary" onClick={handlePositiveDecision}>
-                    {profile.user_type === 0 ? 'Санал болгох' : 'Ажилд авах'}
+            <Modal title="Шийдвэр" open={firstModalOpen} onCancel={firstModalHandleCancel} footer={null}>
+                <Button className='mb-3' block type="primary" onClick={() => handleDecision((is_final === 'true' ? 2 : 0), form.getFieldsValue())}>
+                    {is_final === 'true' ? 'Ажилд авах' : 'Санал болгох'}
                 </Button>
-                <Button type="primary" danger onClick={handleNegativeDecision}>
-                    {profile.user_type === 0 ? 'Санал болгохгүй' : 'Ажилд авахгүй'}
+                <Button block type="primary" danger onClick={() => handleDecision((is_final === 'true' ? 3 : 1), form.getFieldsValue())}>
+                    {is_final === 'true' ? 'Ажилд авахгүй' : 'Санал болгохгүй'}
                 </Button>
             </Modal>
 
-            <Modal title="Санал болгох" open={secondModalOpen} onCancel={secondModalHandleCancel}>
-                <Form
-                    name="basic"
-                    onFinish={onSecondFormFinish}
-                >
-                    <Form.Item label="Санал болгох ажилтан" name="suggest_employee_id" rules={customRule}>
-                        <Select placeholder="Сонгох">
-                            <Option value="1">1</Option>
-                            <Option value="2">2</Option>
-                            <Option value="3">3</Option>
-                            <Option value="4">4</Option>
-                            <Option value="5">5</Option>
-                            <Option value="6">6</Option>
-                            <Option value="7">7</Option>
-                            <Option value="8">8</Option>
-                            <Option value="9">9</Option>
-                            <Option value="10">10</Option>
-                        </Select>
-                    </Form.Item>
-
-                    <Form.Item label={null}>
-                        <Button type="primary" htmlType="submit">
-                            Submit
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Modal>
             <Form
                 layout={'vertical'}
                 form={form}
@@ -134,14 +118,9 @@ const Interview = ({ data }) => {
                     interviewer_department: profile.department,
                     interviewer_title: profile.title,
                     interviewer_full_name: profile.last_name + ' ' + profile.first_name,
-                    candidate_last_name: data.last_name,
-                    candidate_first_name: data.first_name,
-                    created_at: dayjs(),
-                    candidate_company: data.company,
-                    candidate_department: data.department,
-                    candidate_title: data.title
+                    created_at: dayjs()
                 }}
-                onFinish={onFirstFormFinish}
+                onFinish={onFormFinish}
             >
                 <h1>Ярилцлагын үнэлгээний хуудас</h1>
 
@@ -158,7 +137,7 @@ const Interview = ({ data }) => {
                     </Col>
                     <Col span={8}>
                         <Form.Item label="Ярилцлага хийсэн огноо" name="created_at">
-                            <DatePicker defaultValue={dayjs()} style={{ width: '100%' }} disabled />
+                            <DatePicker initialValues={dayjs()} style={{ width: '100%' }} disabled />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -252,16 +231,9 @@ const Interview = ({ data }) => {
                     <Col span={8}>
                         <Form.Item label="Нэгдсэн дүгнэлт" name="conclution_points" rules={customRule}>
                             <Select placeholder="1 (Хангалтгүй) - 10 (Маш сайн)">
-                                <Option value="1">1</Option>
-                                <Option value="2">2</Option>
-                                <Option value="3">3</Option>
-                                <Option value="4">4</Option>
-                                <Option value="5">5</Option>
-                                <Option value="6">6</Option>
-                                <Option value="7">7</Option>
-                                <Option value="8">8</Option>
-                                <Option value="9">9</Option>
-                                <Option value="10">10</Option>
+                                {[...Array(10)].map((_, i) => (
+                                    <Option key={i + 1} value={i + 1}>{i + 1}</Option>
+                                ))}
                             </Select>
                         </Form.Item>
                     </Col>
@@ -274,7 +246,6 @@ const Interview = ({ data }) => {
                         </Form.Item>
                     </Col>
                 </Row>
-
 
                 <Form.Item>
                     <Button block type="primary" htmlType="submit">Илгээх</Button>

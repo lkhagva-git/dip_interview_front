@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getRequest } from '../utils';
-import { Space, Table, Tag } from 'antd';
+import { Button, Input, Space, Table } from 'antd';
 
 const { Column, ColumnGroup } = Table;
 
 const JobCandidates = () => {
     const [candidatesData, setCandidatesData] = useState([]);
-    const navigate = useNavigate(); // Used to programmatically navigate to the detail page
+    const [filteredData, setFilteredData] = useState([]);
+    const [searchText, setSearchText] = useState('');
+    const navigate = useNavigate();
 
     const getData = async () => {
         try {
             const response = await getRequest('/api/candidates_data/');
-            console.log('Response candidates:', response);
             setCandidatesData(response);
+            setFilteredData(response);  
         } catch (error) {
             console.error('Failed to fetch candidate data:', error);
         }
@@ -23,9 +25,30 @@ const JobCandidates = () => {
         getData();
     }, []);
 
+    useEffect(() => {
+        const filtered = candidatesData.filter(item => {
+            return Object.values(item).some(value =>
+                value?.toString().toLowerCase().includes(searchText.toLowerCase())
+            );
+        });
+        setFilteredData(filtered);
+    }, [searchText, candidatesData]);
+
+    const handleSearch = (e) => {
+        setSearchText(e.target.value);
+    };
+
     return (
         <>
-            <Table dataSource={candidatesData} rowKey="id"> {/* Add rowKey to uniquely identify each row */}
+            <Space style={{ marginBottom: 16 }}>
+                <Input
+                    placeholder="Хайх..."
+                    value={searchText}
+                    onChange={handleSearch}
+                    style={{ width: 300 }}
+                />
+            </Space>
+            <Table dataSource={filteredData} rowKey="id">
                 <Column title="Овог" dataIndex="last_name" key="last_name" />
                 <Column title="Нэр" dataIndex="first_name" key="first_name" />
                 <ColumnGroup title="Горилож буй албан тушаал">
@@ -39,7 +62,9 @@ const JobCandidates = () => {
                     key="action"
                     render={(_, record) => (
                         <Space size="middle">
-                            <a onClick={() => navigate(`/candidate/${record.id}`)}>Detail of {record.first_name}</a>
+                            <Button type='primary' onClick={() => navigate(`/candidate/${record.id}`)}>
+                                Дэлгэрэнгүй
+                            </Button>
                         </Space>
                     )}
                 />
