@@ -26,10 +26,6 @@ const JobCandidateDetail = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
-    const onChange = (key) => {
-        console.log(key);
-    };
-
     const items = [
         {
             key: '1',
@@ -48,8 +44,8 @@ const JobCandidateDetail = () => {
         <>
             {jobApplicationData && (
                 <>
-                    <h2>Detail for {jobApplicationData.first_name} {jobApplicationData.last_name}</h2>
-                    <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+                    <h2>Дэлгэнгүй мэдээлэл - {jobApplicationData.first_name} {jobApplicationData.last_name}</h2>
+                    <Tabs defaultActiveKey="1" items={items} />
                 </>
             )}
         </>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, Select, Form, Space, Row, Col, message } from 'antd';
 import { useParams } from 'react-router-dom';
-import { getRequest, postRequest } from '../utils';
+import { getRequest, postRequest } from '../../utils';
 
 const { Option } = Select;
 

@@ -3,7 +3,6 @@ import { getRequest } from '../utils';
 
 const AuthContext = createContext();
 
-// Custom Hook to use AuthContext
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
@@ -11,18 +10,16 @@ export const AuthProvider = ({ children }) => {
         token: localStorage.getItem('token'),
         profile: null,
     });
-    console.log("auth", auth)
+
     useEffect(() => {
         const fetchProfile = async () => {
             if (auth.token) {
                 try {
                     const response = await getRequest('/api/profile_data/');
-                    console.log("response profile", response)
-
                     setAuth((prevAuth) => ({ ...prevAuth, profile: response }));
                 } catch (error) {
                     console.error('Failed to fetch profile data:', error);
-                    logout(); // Clear token if profile fetch fails
+                    logout();
                 }
             }
         };
@@ -32,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = (token) => {
         localStorage.setItem('token', token);
-        setAuth({ token, profile: null }); 
+        setAuth({ token, profile: null });
     };
 
     const logout = () => {

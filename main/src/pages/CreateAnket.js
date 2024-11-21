@@ -17,7 +17,7 @@ const CreateAnket = () => {
 
     const onFinish = async (values) => {
         try {
-            const response = await postRequest('/api/anket/', values);
+            await postRequest('/api/anket/', values);
             message.success('Анкет successfully created!');
             form.resetFields();
             setFamilyFields([{}]);

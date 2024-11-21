@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getRequest, postRequest } from '../utils';
-import { Button, Card, Col, message, Modal, Row, Select, Space, Form, DatePicker, Input, Badge, Alert } from 'antd';
+import { Button, Card, Col, message, Modal, Row, Select, Space, Form, DatePicker, Input, Badge, Alert, Spin } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import InterviewDetail from './InterviewDetail';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,6 +17,7 @@ const InterviewHistory = () => {
 
     const [profileListData, setProfileListData] = useState([]);
     const [interFields, setInterFields] = useState(['']);
+    const [loading, setLoading] = useState(false);
 
     const interviewDetailRef = useRef(null);
 
@@ -103,13 +104,14 @@ const InterviewHistory = () => {
             await postRequest('/api/create_interview_plan/', sendData);
             message.success('Interview plan successfully created!');
             getInterviewHistoryData();
-            setStepModalOpen(false);
+            modalHandleCancel();
         } catch (error) {
             message.error('Failed to create interview plan');
         }
     };
 
     const onScheduleFormFinish = async (values) => {
+        setLoading(true);
         const dateTime = values.date_time;
 
         const sendData = {
@@ -126,17 +128,19 @@ const InterviewHistory = () => {
             message.success('Schedule successfully created!');
         } catch (error) {
             message.error('Failed to create Schedule');
+        } finally {
+            setLoading(false);
         }
     };
 
-    useEffect(() => {
-        if (interviewHistoryData && interviewHistoryData.length === 0) {
-            const timer = setTimeout(() => {
-                setStepModalOpen(true);
-            }, 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [interviewHistoryData]);
+    // useEffect(() => {
+    //     if (interviewHistoryData && interviewHistoryData.length === 0) {
+    //         const timer = setTimeout(() => {
+    //             setStepModalOpen(true);
+    //         }, 1000);
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [interviewHistoryData]);
 
 
     const ribbonTextSetter = (item) => {
@@ -187,26 +191,30 @@ const InterviewHistory = () => {
                 onCancel={modalHandleCancel}
                 footer={null}
             >
-                <Form name="interviewPlan" onFinish={onStepFormFinish} layout="vertical">
-                    <Space direction="vertical" style={{ width: '100%' }}>
-                        <Alert
-                            description="Хамгийн сүүлийн шатны ярилцлага хийх ажилтан ажилд авах/авахгүй шийдвэр гаргах болно."
-                            type="info"
-                            style={{ padding: 10 }}
-                        />
-                        {interFields.map((_, index) => renderField(index))}
+                <Spin spinning={loading}>
 
-                        <Button type="dashed" onClick={addField} block>
-                            Шат нэмэх
-                        </Button>
+                    <Form name="interviewPlan" onFinish={onStepFormFinish} layout="vertical">
+                        <Space direction="vertical" style={{ width: '100%' }}>
+                            <Alert
+                                description="Хамгийн сүүлийн шатны ярилцлага хийх ажилтан ажилд авах/авахгүй шийдвэр гаргах болно."
+                                type="info"
+                                style={{ padding: 10 }}
+                            />
+                            {interFields.map((_, index) => renderField(index))}
 
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit" block>
-                                Хадгалах
+                            <Button type="dashed" onClick={addField} block>
+                                Шат нэмэх
                             </Button>
-                        </Form.Item>
-                    </Space>
-                </Form>
+
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit" block>
+                                    Хадгалах
+                                </Button>
+                            </Form.Item>
+                        </Space>
+                    </Form>
+                </Spin>
+
             </Modal>
 
             <Modal
@@ -215,20 +223,22 @@ const InterviewHistory = () => {
                 onCancel={modalHandleCancel}
                 footer={null}
             >
-                <Form name="interviewSchedule" onFinish={onScheduleFormFinish} layout="vertical">
-                    <Form.Item label="Өдөр, цаг" name="date_time" rules={customRule}>
-                        <DatePicker showTime style={{ width: '100%' }} />
-                    </Form.Item>
-                    <Form.Item label="Уулзалтын байршил" name="address" rules={customRule}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item>
+                <Spin spinning={loading}>
+                    <Form name="interviewSchedule" onFinish={onScheduleFormFinish} layout="vertical">
+                        <Form.Item label="Өдөр, цаг" name="date_time" rules={customRule}>
+                            <DatePicker showTime style={{ width: '100%' }} />
+                        </Form.Item>
+                        <Form.Item label="Уулзалтын байршил" name="address" rules={customRule}>
+                            <Input />
+                        </Form.Item>
+                        <Form.Item>
 
-                        <Button type="primary" htmlType="submit" block>
-                            Хадгалах
-                        </Button>
-                    </Form.Item>
-                </Form>
+                            <Button type="primary" htmlType="submit" loading={loading} block>
+                                Хадгалах
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Spin>
             </Modal>
 
 
@@ -255,15 +265,15 @@ const InterviewHistory = () => {
                                                 </>
                                             }
 
-                                            {/* {(!item.is_completed && item.username === auth.profile.username) && */}
-                                            {!item.is_completed &&
+                                            {/* {!item.is_completed && */}
+                                            {(!item.is_completed && item.username === auth.profile.username) &&
                                                 <Button className='mr-1' type="primary" onClick={() => navigate(`/candidate/${id}/interview/${item.id}/${item.is_final}`)}>
                                                     Ярилцлага хийх
                                                 </Button>
                                             }
 
-                                            {/* {(!item.is_scheduled && !item.is_completed && item.username === auth.profile.username) && ( */}
-                                            {!item.is_scheduled && !item.is_completed && (
+                                            {/* {!item.is_scheduled && !item.is_completed && ( */}
+                                            {(!item.is_scheduled && !item.is_completed && item.username === auth.profile.username) && (
                                                 <Button className='mr-1' type="primary" onClick={() => setScheduleModalOpen({ show: true, data: item })}>
                                                     Цаг товлох
                                                 </Button>

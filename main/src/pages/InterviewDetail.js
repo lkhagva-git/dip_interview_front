@@ -32,7 +32,6 @@ const InterviewDetail = forwardRef((props, ref) => {
             const response = await getRequest(`/api/interview_detail/${props.props.inter_id}/`);
             setInterviewDetailData(response);
         } catch (error) {
-            console.error("Failed to fetch interview detail:", error);
             message.error("Unable to load interview detail data.");
         }
     };
