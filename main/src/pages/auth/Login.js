@@ -4,7 +4,7 @@ import { loginFetch } from '../../utils';
 import { useAuth } from '../../contexts/AuthContext';
 import { Spin } from 'antd';
 
-const Login = ({ setProfileData }) => {
+const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
