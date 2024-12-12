@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import dayjs from 'dayjs';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const { Option } = Select;
+// const { Option } = Select;
 
 const Interview = () => {
     const { auth } = useAuth();
@@ -123,14 +123,14 @@ const Interview = () => {
                     }}
                     onFinish={onFormFinish}
                     onValuesChange={(_, allValues) => {
-                        const totalQuestions = 9; // Update this if the number of questions changes
+                        const totalQuestions = 9;
                         const scores = Object.keys(allValues)
                             .filter(key => key.startsWith('question_'))
                             .map(key => parseInt(allValues[key], 10) || 0);
-
+                
                         if (scores.length) {
                             const rawAverage = scores.reduce((a, b) => a + b, 0) / totalQuestions;
-                            const scaledAverage = ((rawAverage / 4) * 10).toFixed(1); // Scale to 1–10
+                            const scaledAverage = ((rawAverage / 4) * 100).toFixed(1); 
                             form.setFieldsValue({ conclution_points: scaledAverage });
                         } else {
                             form.setFieldsValue({ conclution_points: 0 });
@@ -180,17 +180,17 @@ const Interview = () => {
                     <div style={{ marginBottom: '24px' }}>
                         {['Харилцаа (өөрийгөө илэрхийлэх чадвар, сонсох чадвар)', 'Гадаад төрх (хувцаслалт, body language)', 'Асуултад хариулах буй байдал (санаагаа оновчтой илэрхийлэх буй эсэх, логик сэтгэлгээ, харилцааг ойлголцол)', 'Хандлага (ээлтэй байдал, урам зориг, зорилгодоо хүрэх тэмүүлэл)', 'Идэвх санаачлага (бие даасан байдал, авхаалж самбаа, хөдөлмөрч зан чанар, идэвхтэй байдал)', 'Өөрийгөө хөгжүүлэх зан чанар (хариуцлагатай байдал, зорилго тодорхойлсон байдал, өөртөө итгэх итгэл)', 'Манлайлах болон багтаа ажиллах (идэвхтэй, ажил хэрэгч байдал)', 'Мэдлэг, авьяас (ерөнхий чадвар, техникийн ур чадвар)', 'Нэгдсэн дүгнэлт (дээрх бүх үнэлгээ зүйлсийг нэгтгэж дүгнэх)'].map((question, index) => (
                             <Row key={index} gutter={16} style={{ marginBottom: '16px' }}>
-                                <Col span={12}>
+                                <Col span={8}>
                                     <span>{index + 1}. {question}</span>
                                 </Col>
-                                <Col span={12}>
+                                <Col span={16}>
                                     <Form.Item name={`question_${index + 1}`} rules={customRule}>
                                         <Radio.Group>
-                                            <Radio value="0">Хангалтгүй</Radio>
-                                            <Radio value="1">Дунджаас доогуур</Radio>
-                                            <Radio value="2">Дундаж</Radio>
-                                            <Radio value="3">Сайн</Radio>
-                                            <Radio value="4">Маш сайн</Radio>
+                                            <Radio value="0">Хангалтгүй (0 оноо)</Radio>
+                                            <Radio value="1">Дунджаас доогуур (1 оноо)</Radio>
+                                            <Radio value="2">Дундаж (2 оноо)</Radio>
+                                            <Radio value="3">Сайн (3 оноо)</Radio>
+                                            <Radio value="4">Маш сайн (4 оноо)</Radio>
                                         </Radio.Group>
                                     </Form.Item>
                                 </Col>
@@ -245,7 +245,7 @@ const Interview = () => {
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item label="Нэгдсэн дүгнэлт" name="conclution_points" rules={customRule}>
+                            <Form.Item label="Нэгдсэн дүгнэлт %" name="conclution_points" rules={customRule}>
                                 {/* <Select placeholder="1 (Хангалтгүй) - 10 (Маш сайн)">
                                     {[...Array(10)].map((_, i) => (
                                         <Option key={i + 1} value={i + 1}>{i + 1} оноо</Option>

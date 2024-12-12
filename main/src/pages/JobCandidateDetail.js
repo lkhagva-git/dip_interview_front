@@ -44,7 +44,7 @@ const JobCandidateDetail = () => {
         <>
             {jobApplicationData && (
                 <>
-                    <h2>Дэлгэнгүй мэдээлэл - {jobApplicationData.first_name} {jobApplicationData.last_name}</h2>
+                    <h2>Дэлгэрэнгүй мэдээлэл - {jobApplicationData.first_name} {jobApplicationData.last_name}</h2>
                     <Tabs defaultActiveKey="1" items={items} />
                 </>
             )}
