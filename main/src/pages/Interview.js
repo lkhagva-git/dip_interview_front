@@ -84,7 +84,7 @@ const Interview = () => {
         if (id) {
             getJobApplicationData();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     useEffect(() => {
@@ -122,6 +122,21 @@ const Interview = () => {
                         created_at: dayjs()
                     }}
                     onFinish={onFormFinish}
+                    onValuesChange={(_, allValues) => {
+                        const totalQuestions = 9; // Update this if the number of questions changes
+                        const scores = Object.keys(allValues)
+                            .filter(key => key.startsWith('question_'))
+                            .map(key => parseInt(allValues[key], 10) || 0);
+
+                        if (scores.length) {
+                            const rawAverage = scores.reduce((a, b) => a + b, 0) / totalQuestions;
+                            const scaledAverage = ((rawAverage / 4) * 10).toFixed(1); // Scale to 1–10
+                            form.setFieldsValue({ conclution_points: scaledAverage });
+                        } else {
+                            form.setFieldsValue({ conclution_points: 0 });
+                        }
+                    }}
+                    
                 >
                     <h1>Ярилцлагын үнэлгээний хуудас</h1>
 
@@ -231,11 +246,13 @@ const Interview = () => {
                         </Col>
                         <Col span={8}>
                             <Form.Item label="Нэгдсэн дүгнэлт" name="conclution_points" rules={customRule}>
-                                <Select placeholder="1 (Хангалтгүй) - 10 (Маш сайн)">
+                                {/* <Select placeholder="1 (Хангалтгүй) - 10 (Маш сайн)">
                                     {[...Array(10)].map((_, i) => (
                                         <Option key={i + 1} value={i + 1}>{i + 1} оноо</Option>
                                     ))}
-                                </Select>
+                                </Select> */}
+                                <Input disabled />
+
                             </Form.Item>
                         </Col>
                     </Row>
